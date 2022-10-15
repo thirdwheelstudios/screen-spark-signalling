@@ -1,4 +1,4 @@
-name: Node.js CI - WebRTC Signalling Server
+name: Node.js CI - Screen Spark Signalling
 
 on:
   push:
