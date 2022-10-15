@@ -13,7 +13,7 @@ const createWebSocketsServer = () => {
   app.use(apiKeyMiddleware)
 
   app.get('/*', (req, res) => {
-    res.sendStatus(400)
+    res.sendStatus(404)
   })
 
   const httpServer = createServer(app)
