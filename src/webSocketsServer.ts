@@ -1,5 +1,4 @@
 import { createServer } from 'http'
-import express from 'express'
 import { Server } from 'socket.io'
 import { apiKeyMiddleware } from './apiKeyMiddleware'
 
@@ -8,20 +7,14 @@ const createWebSocketsServer = () => {
     process.env.corsOrigins ??
     'https://screenspark.co.uk,http://localhost:5173,http://127.0.0.1:5173'
 
-  const app: express.Application = express()
-
-  app.use(apiKeyMiddleware)
-
-  app.get('/*', (req, res) => {
-    res.sendStatus(404)
-  })
-
-  const httpServer = createServer(app)
+  const httpServer = createServer()
   const io = new Server(httpServer, {
     cors: {
       origin: corsOrigins.split(','),
     },
   })
+
+  io.use(apiKeyMiddleware)
 
   io.on('connect', (socket) => {
     console.log(`connect ${socket.id}`)

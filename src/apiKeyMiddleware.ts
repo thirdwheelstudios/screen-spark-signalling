@@ -1,15 +1,20 @@
-import { Request, Response, NextFunction } from 'express'
+import { Socket } from 'socket.io'
+import { ExtendedError } from 'socket.io/dist/namespace'
 
-const apiKeyMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const apiKey = req.headers['x-api-key']
+const apiKeyMiddleware = (
+  socket: Socket,
+  next: (err?: ExtendedError | undefined) => void
+) => {
+  const apiKey = socket.request.headers['x-api-key']
   const apiKeyIsValid = !apiKey ? null : apiKey === process.env.API_KEY
 
   if (apiKeyIsValid) {
     next()
   } else {
-    res.status(401)
-    res.send(
-      `${apiKeyIsValid === null ? 'No' : 'Invalid'} x-api-key header supplied`
+    next(
+      new Error(
+        `${apiKeyIsValid === null ? 'No' : 'Invalid'} x-api-key header supplied`
+      )
     )
   }
 }
