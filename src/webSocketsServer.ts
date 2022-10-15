@@ -1,5 +1,6 @@
 import { createServer } from 'http'
 import { Server } from 'socket.io'
+import { apiKeyMiddleware } from './apiKeyMiddleware'
 
 const createWebSocketsServer = () => {
   const corsOrigins =
@@ -12,6 +13,8 @@ const createWebSocketsServer = () => {
       origin: corsOrigins.split(','),
     },
   })
+
+  io.use(apiKeyMiddleware)
 
   io.on('connect', (socket) => {
     console.log(`connect ${socket.id}`)
