@@ -19,23 +19,17 @@ const createWebSocketsServer = () => {
   io.on('connect', (socket) => {
     console.log(`connect ${socket.id}`)
 
-    socket.on('connectToReceiver', (receiverId: string) => {
-      io.to(receiverId).emit('senderConnected', socket.id)
+    socket.on('connectToShareId', (shareId: string) => {
+      socket.join(shareId)
     })
 
-    socket.on(
-      'iceCandidate',
-      (receiverId: string, candidate: RTCIceCandidate) => {
-        io.to(receiverId).emit('iceCandidate', candidate)
-      }
-    )
+    socket.on('iceCandidate', (shareId: string, candidate: RTCIceCandidate) => {
+      io.to(shareId).emit('iceCandidate', candidate)
+    })
 
-    socket.on(
-      'sdp',
-      (receiverId: string, sdp: RTCSessionDescription | null) => {
-        io.to(receiverId).emit('sdp', sdp)
-      }
-    )
+    socket.on('sdp', (shareId: string, sdp: RTCSessionDescription | null) => {
+      io.to(shareId).emit('sdp', sdp)
+    })
 
     socket.on('disconnect', () => {
       console.log(`disconnect ${socket.id}`)
