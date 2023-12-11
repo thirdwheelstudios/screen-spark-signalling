@@ -19,16 +19,31 @@ const createWebSocketsServer = () => {
   io.on('connect', (socket) => {
     console.log(`connect ${socket.id}`)
 
-    const roomName = (shareId: string, isBroadcasting: boolean) => {
+    const getRoomName = (shareId: string, isBroadcasting: boolean) => {
       return `${shareId}-${isBroadcasting ? 'broadcaster' : 'viewer'}`
     }
 
+    socket.on('connectToShareAsViewer', async (shareId: string) => {
+      await socket.join(getRoomName(shareId, false))
+
+      io.to(getRoomName(shareId, false)).emit('viewerConnected')
+    })
+
     socket.on(
-      'connectToShareId',
-      (shareId: string, isBroadcasting: boolean) => {
-        socket.join(roomName(shareId, isBroadcasting))
+      'connectToShareAsBroadcaster',
+      async (shareId: string, deviceName?: string, userAgent?: string) => {
+        await socket.join(getRoomName(shareId, true))
+
+        io.to(getRoomName(shareId, false)).emit('broadcasterConnected', {
+          deviceName,
+          userAgent,
+        })
       }
     )
+
+    socket.on('startBroadcasting', (shareId: string) => {
+      io.to(getRoomName(shareId, true)).emit('startBroadcasting')
+     })
 
     socket.on(
       'iceCandidate',
@@ -37,7 +52,10 @@ const createWebSocketsServer = () => {
         isBroadcasting: boolean,
         candidate: RTCIceCandidate
       ) => {
-        io.to(roomName(shareId, isBroadcasting)).emit('iceCandidate', candidate)
+        io.to(getRoomName(shareId, isBroadcasting)).emit(
+          'iceCandidate',
+          candidate
+        )
       }
     )
 
@@ -48,7 +66,7 @@ const createWebSocketsServer = () => {
         isBroadcasting: boolean,
         sdp: RTCSessionDescription | null
       ) => {
-        io.to(roomName(shareId, isBroadcasting)).emit('sdp', sdp)
+        io.to(getRoomName(shareId, isBroadcasting)).emit('sdp', sdp)
       }
     )
 
