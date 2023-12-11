@@ -1,6 +1,6 @@
 {
   "name": "screen-spark-signalling",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Signalling server for Screen Spark's WebRTC implementation",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
