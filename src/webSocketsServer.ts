@@ -5,7 +5,7 @@ import { apiKeyMiddleware } from './apiKeyMiddleware'
 const createWebSocketsServer = () => {
   const corsOrigins =
     process.env.CORS_ORIGINS ??
-    'https://screenspark.co.uk,http://localhost:5173,http://127.0.0.1:5173'
+    'https://screenspark.co.uk,http://localhost:5173,http://127.0.0.1:5173,https://screenspark.netlify.app,https://screen-spark-web.pages.dev'
 
   const httpServer = createServer()
   const io = new Server(httpServer, {
